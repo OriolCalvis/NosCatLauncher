@@ -1,0 +1,9 @@
+<Solution>
+  <Folder Name="/src/">
+    <Project Path="src/NosCatLauncher.Core/NosCatLauncher.Core.csproj" />
+    <Project Path="src/NosCatLauncher/NosCatLauncher.csproj" />
+  </Folder>
+  <Folder Name="/tests/">
+    <Project Path="tests/NosCatLauncher.Tests/NosCatLauncher.Tests.csproj" />
+  </Folder>
+</Solution>

@@ -1,0 +1,6 @@
+<Project>
+  <!-- The parent folder "n0'sCat" has an apostrophe, which breaks MSBuild's copy of .pdb files on publish. -->
+  <PropertyGroup Condition="'$(Configuration)' == 'Release'">
+    <DebugType>none</DebugType>
+  </PropertyGroup>
+</Project>

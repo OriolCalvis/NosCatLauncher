@@ -1,0 +1,10 @@
+{
+  "ServerName": "NosCore (Mac)",
+  "AuthUrl": "http://192.168.3.10:5100",
+  "LoginServerIp": "192.168.3.10",
+  "LoginServerPort": 4000,
+  "PatchPort": true,
+  "ClientPath": "",
+  "Language": "en",
+  "LastUser": ""
+}
