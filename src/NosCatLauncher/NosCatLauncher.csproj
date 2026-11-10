@@ -11,6 +11,7 @@
     <ApplicationHighDpiMode>PerMonitorV2</ApplicationHighDpiMode>
     <AssemblyName>NosCatLauncher</AssemblyName>
     <RootNamespace>NosCatLauncher</RootNamespace>
+    <ApplicationManifest>app.manifest</ApplicationManifest>
 
     <RuntimeIdentifier>win-x64</RuntimeIdentifier>
     <SelfContained>true</SelfContained>
@@ -25,6 +26,14 @@
 
   <ItemGroup>
     <None Include="launcher.json" CopyToOutputDirectory="PreserveNewest" CopyToPublishDirectory="Never" />
+    <!-- 32-bit gameforge_api.dll replacement the launcher puts next to the client when there is no Gameforge Client (native/gfapi). -->
+    <None Include="..\..\native\gfapi\prebuilt\gameforge_api.dll" Link="gameforge_api.dll"
+          CopyToOutputDirectory="PreserveNewest" CopyToPublishDirectory="Never" />
   </ItemGroup>
+
+  <!-- Copied by hand: the SDK's publish copy breaks on paths with an apostrophe (C:\Games\n0'sCat). -->
+  <Target Name="PublishGfApi" AfterTargets="Publish">
+    <Copy SourceFiles="..\..\native\gfapi\prebuilt\gameforge_api.dll" DestinationFolder="$(PublishDir)" SkipUnchangedFiles="true" />
+  </Target>
 
 </Project>

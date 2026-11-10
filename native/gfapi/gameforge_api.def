@@ -1,0 +1,26 @@
+; Same export names as Gameforge's gameforge_api.dll proxy (stdcall-decorated), which psw_tnt.dll imports by name.
+; _gfc_version@0 and the GFC_Version operators are left out: nothing in the client imports them.
+LIBRARY gameforge_api
+EXPORTS
+    _gfc_init@0=_noscat_init@0
+    _gfc_isClientRunning@0=_noscat_isClientRunning@0
+    _gfc_shutdown@0=_noscat_shutdown@0
+    _gfc_queryAuthorizationCode@8=_noscat_queryAuthorizationCode@8
+    _gfc_queryGameAccountId@8=_noscat_queryGameAccountId@8
+    _gfc_queryGameAccountNumericId@8=_noscat_queryGameAccountNumericId@8
+    _gfc_queryGameAccountName@8=_noscat_queryGameAccountName@8
+    _gfc_queryGameLocale@8=_noscat_queryGameLocale@8
+    _gfc_queryClientLocale@8=_noscat_queryClientLocale@8
+    _gfc_queryCurrentBranch@8=_noscat_queryCurrentBranch@8
+    _gfc_queryGameDisplayLocale@8=_noscat_queryGameDisplayLocale@8
+    _gfc_queryGameRegion@8=_noscat_queryGameRegion@8
+    _gfc_sessionId@8=_noscat_sessionId@8
+    _gfc_setErrorCallback@8=_noscat_setErrorCallback@8
+    _gfc_setGlobalErrorMessageCallback@8=_noscat_setGlobalErrorMessageCallback@8
+    _gfc_lastError@0=_noscat_lastError@0
+    _gfc_lastErrorCode@0=_noscat_lastErrorCode@0
+    _gfc_resetError@0=_noscat_resetError@0
+    _gfc_copyError@4=_noscat_copyError@4
+    _gfc_freeError@4=_noscat_freeError@4
+    _gfc_proxyVersion@0=_noscat_proxyVersion@0
+    noscat_marker

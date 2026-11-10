@@ -35,8 +35,25 @@ public class RpcHandlerTests
         return JsonDocument.Parse(response).RootElement;
     }
 
+    [Fact]
+    public async Task AnswersIsClientRunningWithABoolean()
+    {
+        var (_, response) = await Handler().HandleAsync("""{"id":1,"jsonrpc":"2.0","method":"ClientLibrary.isClientRunning"}""");
+
+        Assert.Equal(JsonValueKind.True, Result(response).GetProperty("result").ValueKind);
+    }
+
+    [Fact]
+    public void MethodNotFoundKeepsTheRequestId()
+    {
+        var root = Result(RpcHandler.MethodNotFound("""{"id":9,"jsonrpc":"2.0","method":"ClientLibrary.x"}"""));
+
+        Assert.Equal(9, root.GetProperty("id").GetInt32());
+        Assert.Equal(-32601, root.GetProperty("error").GetProperty("code").GetInt32());
+        Assert.False(root.TryGetProperty("result", out _));
+    }
+
     [Theory]
-    [InlineData("ClientLibrary.isClientRunning", "true")]
     [InlineData("ClientLibrary.queryAuthorizationCode", "the-code")]
     [InlineData("ClientLibrary.queryGameAccountName", "admin")]
     [InlineData("ClientLibrary.initSession", "abc-123")]
@@ -82,13 +99,14 @@ public class GameforgeRpcServerTests
 
             await client.WriteAsync("""{"id":1,"jsonrpc":"2.0","method":"ClientLibrary.isClientRunning"}"""u8.ToArray());
             await client.WriteAsync("""{"id":2,"jsonrpc":"2.0","method":"ClientLibrary.queryAuthorizationCode"}"""u8.ToArray());
+            await client.WriteAsync("""{"id":3,"jsonrpc":"2.0","method":"ClientLibrary.unknown"}"""u8.ToArray());
             await client.FlushAsync();
 
             var framer = new JsonFramer();
             var responses = new List<string>();
             var buffer = new byte[1024];
             using var timeout = new CancellationTokenSource(TimeSpan.FromSeconds(5));
-            while (responses.Count < 2)
+            while (responses.Count < 3)
             {
                 var read = await client.ReadAsync(buffer, timeout.Token);
                 Assert.True(read > 0, "pipe closed early");
@@ -99,8 +117,10 @@ public class GameforgeRpcServerTests
                 }
             }
 
-            Assert.Equal("true", JsonDocument.Parse(responses[0]).RootElement.GetProperty("result").GetString());
+            Assert.True(JsonDocument.Parse(responses[0]).RootElement.GetProperty("result").GetBoolean());
             Assert.Equal($"code-{expected}", JsonDocument.Parse(responses[1]).RootElement.GetProperty("result").GetString());
+            // Unknown methods still get a reply, so a blocking caller (the native shim) never hangs.
+            Assert.Equal(-32601, JsonDocument.Parse(responses[2]).RootElement.GetProperty("error").GetProperty("code").GetInt32());
         }
     }
 }

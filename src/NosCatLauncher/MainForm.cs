@@ -142,9 +142,22 @@ internal sealed class MainForm : Form
                 Log("ATENCIÓ: no he trobat cap IP per canviar. El client probablement es connectarà a Gameforge.");
             }
 
-            if (!File.Exists(Path.Combine(Path.GetDirectoryName(exe)!, "gameforge_client_api.dll")))
+            var gfApi = ClientStarter.InstallGfApi(Path.GetDirectoryName(exe)!,
+                Path.Combine(AppContext.BaseDirectory, ClientStarter.GfApiName),
+                ClientStarter.GameforgeClientApplicationId() is not null);
+            Log(gfApi switch
             {
-                Log("ATENCIÓ: no hi ha gameforge_client_api.dll al costat del client.");
+                GfApiInstall.Installed => $"Sense Gameforge Client: gameforge_api.dll de NosCat instal·lada (l'original queda com a {ClientStarter.GfApiBackupName}).",
+                GfApiInstall.Updated => "gameforge_api.dll de NosCat actualitzada.",
+                GfApiInstall.UpToDate => "gameforge_api.dll de NosCat al dia.",
+                GfApiInstall.UsingGameforge => "Gameforge Client instal·lat: faig servir el gameforge_api.dll de Gameforge.",
+                GfApiInstall.RestoredGameforge => "Gameforge Client instal·lat: he restaurat el gameforge_api.dll de Gameforge.",
+                GfApiInstall.GameforgeOriginalMissing => $"ATENCIÓ: hi ha Gameforge Client però no trobo {ClientStarter.GfApiBackupName} per restaurar-lo.",
+                _ => "ATENCIÓ: falta gameforge_api.dll al launcher; el client no podrà iniciar sessió.",
+            });
+            if (gfApi is GfApiInstall.Installed or GfApiInstall.Updated or GfApiInstall.UpToDate)
+            {
+                Log("Registre de la DLL: %TEMP%\\noscat_gfclient.log");
             }
 
             await EnsureRpcAsync(auth);
